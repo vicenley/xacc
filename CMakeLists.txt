@@ -148,6 +148,15 @@ if(NOT MPI_CXX_COMPILER STREQUAL "" AND XACC_ENABLE_MPI)
   endif()
 endif()
 
+if (XACC_DEPS_EXTERNAL)
+  find_package(Boost COMPONENTS graph)
+  find_package(cpr)
+  if(cpr_FOUND)
+    set(XACC_USE_EXTERNAL_CPR ON)
+  endif()
+  find_package(GTest)
+endif()
+
 include_directories(${CMAKE_BINARY_DIR}/tpls/cppmicroservices/include)
 add_subdirectory(tpls)
 
