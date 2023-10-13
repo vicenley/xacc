@@ -51,7 +51,7 @@ endif()
 
 # Googletest
 if (XACC_DEPS_EXTERNAL)
-  find_package(GTest)
+  find_package(googletest)
 else()
   set(BUILD_SHARED_LIBS TRUE)
   include(FetchContent)
