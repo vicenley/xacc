@@ -47,15 +47,7 @@ add_library(xacc SHARED
             service/xacc_service.cpp
             accelerator/remote/RemoteAccelerator.cpp)
 
-if (XACC_USE_EXTERNAL_CPR)
-  # External CPR must be accompanied by CURL.
-  find_package(CURL REQUIRED)
-  set_target_properties(xacc PROPERTIES
-    INTERFACE_LINK_LIBRARIES "CURL::libcurl"
-  )
-else()
-  add_dependencies(xacc cpr)
-endif()
+target_link_libraries(xacc PUBLIC cpr::cpr)
 
 if(MPI_FOUND)
   include_directories(${MPI_CXX_HEADER_DIR})

@@ -43,12 +43,12 @@ add_library(${LIBRARY_NAME} SHARED ${SRC})
                                     ${CMAKE_SOURCE_DIR}/tpls/antlr/runtime/src
                                     ${CMAKE_SOURCE_DIR}/tpls/rapidjson/include)
                                     #${CMAKE_SOURCE_DIR}/tpls/exprtk
-                                    
+
   target_link_libraries(${LIBRARY_NAME}
                         PUBLIC xacc
                                xacc-quantum-gate
                                ${ANTLR_LIB}
-                               CppMicroServices PRIVATE cpr)
+                               CppMicroServices PRIVATE cpr::cpr)
 
 
 set(_bundle_name xacc_ibm)
