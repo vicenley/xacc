@@ -186,9 +186,9 @@ endif()
 
 set(NLOHMANN_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tpls/nlohmann/single_include)
 if (XACC_DEPS_EXTERNAL)
-  find_package(nlohmann_json)
+  find_package(nlohmann_json 3.1)
   if (nlohmann_json_FOUND)
-    get_target_property(NLOHMANN_TARGET_INC_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(NLOHMANN_TARGET_INC_DIR nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
     list(GET NLOHMANN_TARGET_INC_DIR 0 NLOHMANN_TARGET_INC_DIR)
     if (EXISTS ${NLOHMANN_TARGET_INC_DIR}/nlohmann/json.hpp)
       # Found a seemingly valid nlohmann installation, use it when XACC_DEPS_EXTERNAL is set
