@@ -13,7 +13,6 @@
 add_subdirectory(ibm)
 add_subdirectory(rigetti)
 #add_subdirectory(cmr)
-add_subdirectory(dwave)
 add_subdirectory(algorithms)
 add_subdirectory(decorators)
 add_subdirectory(circuits)
@@ -35,6 +34,10 @@ if (QRACK_LIBRARY)
     add_subdirectory(qrack)
 else()
     message("-- Could NOT find Qrack library (missing: find_library(QRACK_LIBRARY NAMES qrack))")
+endif()
+
+if(XACC_BUILD_ANNEALING)
+    add_subdirectory(dwave)
 endif()
 
 add_subdirectory(optimal_control)
