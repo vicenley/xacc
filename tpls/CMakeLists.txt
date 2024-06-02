@@ -49,41 +49,43 @@ if (NOT XACC_USE_EXTERNAL_CPR)
     add_subdirectory(cpr)
 endif()
 
-# Googletest
-set(BUILD_SHARED_LIBS TRUE)
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY "https://github.com/google/googletest"
-    GIT_TAG        release-1.12.1
-)
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+if(XACC_BUILD_TESTS)
+    # Googletest
+    set(BUILD_SHARED_LIBS TRUE)
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY "https://github.com/google/googletest"
+        GIT_TAG        release-1.12.1
+    )
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
 
-if(APPLE)
-   set_target_properties(gtest PROPERTIES INSTALL_RPATH "@loader_path")
-   set_target_properties(gtest_main PROPERTIES INSTALL_RPATH "@loader_path")
-else()
-   set_target_properties(gtest PROPERTIES INSTALL_RPATH "$ORIGIN")
-   set_target_properties(gtest_main PROPERTIES INSTALL_RPATH "$ORIGIN")
+    if(APPLE)
+       set_target_properties(gtest PROPERTIES INSTALL_RPATH "@loader_path")
+       set_target_properties(gtest_main PROPERTIES INSTALL_RPATH "@loader_path")
+    else()
+       set_target_properties(gtest PROPERTIES INSTALL_RPATH "$ORIGIN")
+       set_target_properties(gtest_main PROPERTIES INSTALL_RPATH "$ORIGIN")
+    endif()
+
+    set(GTEST_FOUND TRUE)
+    set(GTEST_LIBRARIES gtest)
+    set(GTEST_MAIN_LIBRARIES gtest_main)
+    set(GTEST_BOTH_LIBRARIES gtest gtest_main)
+    set(GTEST_INCLUDE_DIRS ${googletest_SOURCE_DIR}/googletest/include)
+
+    set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
+    set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
+
+    set_cache_variable(GTEST_FOUND "Set if libgtest was found or built")
+    set_cache_variable(GTEST_LIBRARIES "Location of libgtest")
+    set_cache_variable(GTEST_MAIN_LIBRARIES "Location of libgtest-main")
+    set_cache_variable(GTEST_BOTH_LIBRARIES "Location of both gtest libraries")
+    set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
+
+    install(DIRECTORY "${googletest_SOURCE_DIR}/googletest/include/gtest" DESTINATION include/gtest )
 endif()
-
-set(GTEST_FOUND TRUE)
-set(GTEST_LIBRARIES gtest)
-set(GTEST_MAIN_LIBRARIES gtest_main)
-set(GTEST_BOTH_LIBRARIES gtest gtest_main)
-set(GTEST_INCLUDE_DIRS ${googletest_SOURCE_DIR}/googletest/include)
-
-set_property(TARGET gtest PROPERTY FOLDER "tests/gtest")
-set_property(TARGET gtest_main PROPERTY FOLDER "tests/gtest")
-
-set_cache_variable(GTEST_FOUND "Set if libgtest was found or built")
-set_cache_variable(GTEST_LIBRARIES "Location of libgtest")
-set_cache_variable(GTEST_MAIN_LIBRARIES "Location of libgtest-main")
-set_cache_variable(GTEST_BOTH_LIBRARIES "Location of both gtest libraries")
-set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
-
-install(DIRECTORY "${googletest_SOURCE_DIR}/googletest/include/gtest" DESTINATION include/gtest )
 
 set(BUILD_SHARED_LIBS FALSE)
 set(BOOST_LIBS_OPTIONAL graph CACHE STRING "" FORCE)
