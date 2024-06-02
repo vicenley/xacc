@@ -244,7 +244,9 @@ set(PATCH_VERSION 0)
 # their CMake builds, and pass -DXACC_DIR=/path/to/install/xacc
 # and CMake loads include paths, libs, etc
 configure_file("${CMAKE_SOURCE_DIR}/cmake/xacc-config.cmake.in" "${CMAKE_BINARY_DIR}/xacc-config.cmake" @ONLY)
+configure_file("${CMAKE_SOURCE_DIR}/cmake/xacc-config-version.cmake.in" "${CMAKE_BINARY_DIR}/xacc-config-version.cmake" @ONLY)
 install(FILES "${CMAKE_BINARY_DIR}/xacc-config.cmake" DESTINATION .)
+install(FILES "${CMAKE_BINARY_DIR}/xacc-config-version.cmake" DESTINATION .)
 install(FILES "${CMAKE_SOURCE_DIR}/cmake/Modules/format.cmake" DESTINATION share/xacc/)
 install(FILES "${CMAKE_SOURCE_DIR}/tpls/mpark-variant/variant.hpp" DESTINATION include/xacc/)
 install(FILES "${CMAKE_SOURCE_DIR}/tpls/taocpp/operators.hpp" DESTINATION include/xacc/)
