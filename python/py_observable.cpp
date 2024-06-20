@@ -11,15 +11,12 @@
  *   Alexander J. McCaskey - initial API and implementation
  *******************************************************************************/
 #include "py_observable.hpp"
-//#include "Observable.hpp"
 #include "Observable.hpp"
 #include "PauliOperator.hpp"
 #include "FermionOperator.hpp"
-//#include "Utils.hpp"
 #include "xacc_service.hpp"
 #include "py_heterogeneous_map.hpp"
 #include "ObservableTransform.hpp"
-//#include <memory>
 
 using namespace xacc::quantum;
 
