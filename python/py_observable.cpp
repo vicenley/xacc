@@ -12,6 +12,7 @@
  *******************************************************************************/
 #include "py_observable.hpp"
 //#include "Observable.hpp"
+#include "Observable.hpp"
 #include "PauliOperator.hpp"
 #include "FermionOperator.hpp"
 //#include "Utils.hpp"
@@ -46,7 +47,8 @@ void bind_observable(py::module &m) {
                xacc::Observable::fromString,
            "")
       .def("postProcess", &xacc::Observable::postProcess,
-           "Post-process the execution results.");
+           "Post-process the execution results.")
+      .def("getBasisRotations", &xacc::Observable::getMeasurementBasisRotations);
 
   m.def("getObservable",
         [](const std::string &type,

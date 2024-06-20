@@ -195,6 +195,10 @@ public:
                              const HeterogeneousMap &extra_data) override;
 
   std::shared_ptr<Observable> normalOrder() override;
+
+  
+  std::vector<std::shared_ptr<CompositeInstruction>> getMeasurementBasisRotations() override;
+  
 };
 
 } // namespace quantum

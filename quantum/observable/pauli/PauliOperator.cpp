@@ -11,11 +11,16 @@
  *   Alexander J. McCaskey - initial API and implementation
  *******************************************************************************/
 #include "PauliOperator.hpp"
+#include "CompositeInstruction.hpp"
 #include "IRProvider.hpp"
+#include <bits/c++config.h>
+#include <cassert>
 #include <cmath>
+#include <memory>
 #include <regex>
 #include <set>
 #include <iostream>
+#include "Instruction.hpp"
 #include "Observable.hpp"
 #include "xacc.hpp"
 #include "xacc_service.hpp"
@@ -181,6 +186,59 @@ std::complex<double> PauliOperator::coefficient() {
   }
   return terms.begin()->second.coeff();
 }
+
+std::vector<std::shared_ptr<CompositeInstruction>>
+PauliOperator::observe(std::shared_ptr<CompositeInstruction> function) {
+
+  auto basisRotations = getMeasurementBasisRotations();
+  // Create a new GateQIR to hold the spin based terms
+  auto gateRegistry = xacc::getService<IRProvider>("quantum");
+  std::vector<std::shared_ptr<CompositeInstruction>> observed;
+  auto pi = xacc::constants::pi;
+
+  // If the incoming function has instructions that have
+  // their buffer_names set, then we need to set the
+  // new measurement instructions buffer names to be the same.
+  // Here we assume that all instructions have the same buffer name
+  std::string buf_name = "";
+
+  if (function->nInstructions() > 0 &&
+      !function->getInstruction(0)->getBufferNames().empty()) {
+    buf_name = function->getInstruction(0)->getBufferNames()[0];
+  }
+
+  assert(basisRotations.size() == terms.size());
+
+  auto it1 = basisRotations.begin();
+  auto it2 = terms.begin();
+  for (; it1 != basisRotations.end() && it2 != terms.end(); ++it1, ++it2) {
+
+    Term spinInst = (*it2).second;
+
+    auto gateFunction =
+        gateRegistry->createComposite((*it2).first, function->getVariables());
+
+    gateFunction->setCoefficient(spinInst.coeff());
+
+    if (function->hasChildren()) {
+      gateFunction->addInstruction(function->clone());
+    }
+
+    for (auto arg : function->getArguments()) {
+      gateFunction->addArgument(arg, 0);
+    }
+
+    for (auto& rot : (*it1)->getInstructions()) {
+      rot->setBufferNames({buf_name});
+      gateFunction->addInstruction(rot);
+    }
+
+    observed.push_back(gateFunction);
+  }
+  return observed;
+}
+
+/*
 std::vector<std::shared_ptr<CompositeInstruction>>
 PauliOperator::observe(std::shared_ptr<CompositeInstruction> function) {
 
@@ -272,6 +330,7 @@ PauliOperator::observe(std::shared_ptr<CompositeInstruction> function) {
   }
   return observed;
 }
+*/
 
 std::vector<std::shared_ptr<CompositeInstruction>>
 PauliOperator::observe(std::shared_ptr<CompositeInstruction> function,
@@ -1139,6 +1198,75 @@ double PauliOperator::postProcess(std::shared_ptr<AcceleratorBuffer> buffer,
   xacc::error("Unknown post-processing task: " + postProcessTask);
   return 0.0;
 }
+
+std::vector<std::shared_ptr<CompositeInstruction>> PauliOperator::getMeasurementBasisRotations() {
+
+  // the idea is that, for something like VQE, we only need to know
+  // the qubits that need to be measure in the X or Y basis
+  // so we map the index of the qubit, to the corresponding 
+  // rotation operators, then later add measure to all qubits
+  std::vector<std::shared_ptr<CompositeInstruction>> basisRotations;
+
+  auto pi = xacc::constants::pi;
+  // Create a new GateQIR to hold the spin based terms
+  auto gateRegistry = xacc::getService<IRProvider>("quantum");
+
+  // If the incoming function has instructions that have
+  // their buffer_names set, then we need to set the
+  // new measurement instructions buffer names to be the same.
+  // Here we assume that all instructions have the same buffer name
+  std::string buf_name = "";
+
+  // Populate GateQIR now...
+  for (auto &inst : terms) {
+
+    Term spinInst = inst.second;
+
+    // Loop over all terms in the Spin Instruction
+    // and create instructions to run on the Gate QPU.
+    auto termsMap = spinInst.ops();
+
+    std::vector<std::pair<int, std::string>> terms;
+    for (auto &kv : termsMap) {
+      if (kv.second != "I" && !kv.second.empty()) {
+        terms.push_back({kv.first, kv.second});
+      }
+    }
+    auto rotationGates = gateRegistry->createComposite(inst.first);
+    std::vector<std::size_t> measureIdxs;
+    for (int i = terms.size() - 1; i >= 0; i--) {
+
+      std::size_t qbit = terms[i].first;
+      measureIdxs.push_back(qbit);
+      auto gateName = terms[i].second;
+
+      if (gateName == "X") {
+        auto hadamard =
+            gateRegistry->createInstruction("H", {qbit});
+        if (!buf_name.empty())
+          hadamard->setBufferNames({buf_name});
+        rotationGates->addInstruction(hadamard);
+      } else if (gateName == "Y") {
+        auto rx =
+            gateRegistry->createInstruction("Rx", {qbit}, {pi / 2.0});
+        if (!buf_name.empty())
+          rx->setBufferNames({buf_name});
+        rotationGates->addInstruction(rx);
+      }
+
+    }
+      for(auto& mb : measureIdxs) {
+        auto meas = gateRegistry->createInstruction("Measure", {mb});
+        if (!buf_name.empty())
+          meas->setBufferNames({buf_name});
+        rotationGates->addInstruction(meas);
+      }
+    basisRotations.push_back(rotationGates);
+  }
+
+  return basisRotations;
+}
+
 } // namespace quantum
 } // namespace xacc
 

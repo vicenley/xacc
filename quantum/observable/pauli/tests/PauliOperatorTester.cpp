@@ -592,6 +592,15 @@ TEST(PauliOperatorTester, checkGroupingQaoaPostProcessMSB) {
   EXPECT_NEAR(exp_val, 2.0, 0.1);
 }
 
+TEST(PauliOperatorTester, checkGetBasisRotations) {
+  PauliOperator op;
+  op.fromString("(-0.5,0) Z0 Z1 + (-0.5,0) X0 X1 + (-0.5,0) Y0 Y1");
+  auto rot = op.getMeasurementBasisRotations();
+  for(auto& r :rot) {
+      std::cout << r->toString() << "\n";
+  }
+}
+
 int main(int argc, char **argv) {
   xacc::Initialize(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
