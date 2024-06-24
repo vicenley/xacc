@@ -20,7 +20,7 @@ TEST(IonQProgramTester, checkFromJson) {
     "lang": "json",
     "target": "qpu",
     "shots": 1000,
-    "body": {
+    "input": {
         "qubits": 2,
         "circuit": [
             {
