@@ -212,7 +212,6 @@ PauliOperator::observe(std::shared_ptr<CompositeInstruction> function) {
   auto it1 = basisRotations.begin();
   auto it2 = terms.begin();
   for (; it1 != basisRotations.end() && it2 != terms.end(); ++it1, ++it2) {
-
     Term spinInst = (*it2).second;
 
     auto gateFunction =
@@ -1138,7 +1137,9 @@ std::vector<std::shared_ptr<CompositeInstruction>> PauliOperator::getMeasurement
         terms.push_back({kv.first, kv.second});
       }
     }
+
     auto rotationGates = gateRegistry->createComposite(inst.first);
+    rotationGates->setCoefficient(spinInst.coeff());
     std::vector<std::size_t> measureIdxs;
     for (int i = terms.size() - 1; i >= 0; i--) {
 
@@ -1167,9 +1168,8 @@ std::vector<std::shared_ptr<CompositeInstruction>> PauliOperator::getMeasurement
           meas->setBufferNames({buf_name});
         rotationGates->addInstruction(meas);
       }
-    basisRotations.push_back(rotationGates);
+      basisRotations.push_back(rotationGates);
   }
-
   return basisRotations;
 }
 
