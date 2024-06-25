@@ -137,6 +137,9 @@ TEST(HeterogeneousMapTester, checkVQE) {
                        const HeterogeneousMap &extra_data) override {
       return 0.0;
     }
+    std::vector<std::shared_ptr<CompositeInstruction>> getMeasurementBasisRotations() override {
+      return {};
+    }
   };
 
   std::shared_ptr<Observable> observable = std::make_shared<TestObservable>();
