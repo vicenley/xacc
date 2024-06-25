@@ -144,7 +144,7 @@ namespace nlohmann {
         x.set_lang(j.at("lang").get<std::string>());
         x.set_target(j.at("target").get<std::string>());
         x.set_shots(j.at("shots").get<std::int64_t>());
-        x.set_body(j.at("body").get<xacc::ionq::Body>());
+        x.set_body(j.at("input").get<xacc::ionq::Body>());
     }
 
     inline void to_json(json & j, const xacc::ionq::IonQProgram & x) {
@@ -152,6 +152,7 @@ namespace nlohmann {
         j["lang"] = x.get_lang();
         j["target"] = x.get_target();
         j["shots"] = x.get_shots();
-        j["body"] = x.get_body();
+        j["input"] = x.get_body();
     }
 }
+
