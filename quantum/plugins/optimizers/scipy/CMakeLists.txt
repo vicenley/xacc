@@ -18,9 +18,6 @@ find_package(Python COMPONENTS Interpreter Development)
 
 add_library(${LIBRARY_NAME} SHARED ${SRC})
 
-if(Python_FOUND)
-  message("FOUND python")
-endif()
 target_include_directories(${LIBRARY_NAME}
                            PUBLIC . ${CMAKE_SOURCE_DIR}/tpls/pybind11/include ${Python_INCLUDE_DIRS})
 

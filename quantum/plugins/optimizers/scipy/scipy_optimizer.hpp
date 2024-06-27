@@ -10,7 +10,6 @@ namespace xacc {
 
 class ScipyOptimizer : public xacc::Optimizer {
 public:
-
   ScipyOptimizer() = default;
   ~ScipyOptimizer() = default;
 
