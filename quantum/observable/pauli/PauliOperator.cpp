@@ -13,23 +13,11 @@
 #include "PauliOperator.hpp"
 #include "CompositeInstruction.hpp"
 #include "IRProvider.hpp"
-#include <bits/c++config.h>
-#include <cassert>
-#include <cmath>
-#include <memory>
-#include <regex>
-#include <set>
-#include <iostream>
-#include "Instruction.hpp"
-#include "Observable.hpp"
 #include "xacc.hpp"
 #include "xacc_service.hpp"
-
 #include <Eigen/Core>
-
 #include "PauliOperatorLexer.h"
 #include "PauliListenerImpl.hpp"
-
 #include <armadillo>
 
 namespace xacc {
