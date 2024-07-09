@@ -23,15 +23,22 @@ usFunctionGetResourceSource(TARGET ${LIBRARY_NAME} OUT SRC)
 usFunctionGenerateBundleInit(TARGET ${LIBRARY_NAME} OUT SRC)
 
 add_library(${LIBRARY_NAME} SHARED ${SRC})
+set(EIGEN_INCLUDE_DIR "${EIGEN_INCLUDE_DIR}")
+message("EIGEN_INCLUDE_DIR:${EIGEN_INCLUDE_DIR}")
 target_include_directories(${LIBRARY_NAME}
-                            PUBLIC
-                            . ${CMAKE_SOURCE_DIR}/tpls/armadillo
-                            ${CMAKE_SOURCE_DIR}/tpls/antlr/runtime/src
-                            ${CMAKE_CURRENT_SOURCE_DIR}
-                            ${CMAKE_CURRENT_SOURCE_DIR}/generated
-                            ${CMAKE_SOURCE_DIR}/tpls/taocpp
-                            ${EIGEN_INCLUDE_DIR}
-                            ${CMAKE_BINARY_DIR})
+  PUBLIC
+  "${EIGEN_INCLUDE_DIR}"
+  "${EIGEN_INCLUDE_DIR} "
+  "${EIGEN_INCLUDE_DIR}/POOOOOP"
+  "${EIGEN_INCLUDE_DIR}"/POOOOOP
+  ${CMAKE_SOURCE_DIR}/tpls/armadillo
+  ${CMAKE_SOURCE_DIR}/tpls/antlr/runtime/src
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/generated
+  ${CMAKE_SOURCE_DIR}/tpls/taocpp
+  ${CMAKE_BINARY_DIR}
+)
+target_link_libraries(${LIBRARY_NAME} PUBLIC Eigen3::Eigen)
 
 add_dependencies(${LIBRARY_NAME} antlr4_shared)
 

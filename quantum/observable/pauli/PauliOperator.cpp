@@ -13,7 +13,6 @@
 #include "PauliOperator.hpp"
 #include "CompositeInstruction.hpp"
 #include "IRProvider.hpp"
-#include <bits/c++config.h>
 #include <cassert>
 #include <cmath>
 #include <memory>
@@ -1108,7 +1107,7 @@ std::vector<std::shared_ptr<CompositeInstruction>> PauliOperator::getMeasurement
 
   // the idea is that, for something like VQE, we only need to know
   // the qubits that need to be measure in the X or Y basis
-  // so we map the index of the qubit, to the corresponding 
+  // so we map the index of the qubit, to the corresponding
   // rotation operators, then later add measure to all qubits
   std::vector<std::shared_ptr<CompositeInstruction>> basisRotations;
 

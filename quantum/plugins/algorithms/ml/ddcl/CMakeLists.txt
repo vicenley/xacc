@@ -21,8 +21,7 @@ add_library(${LIBRARY_NAME} SHARED ${SRC})
 
 target_include_directories(
   ${LIBRARY_NAME}
-  PUBLIC . 
-  ${EIGEN_INCLUDE_DIR})
+  PUBLIC SYSTEM "${EIGEN_INCLUDE_DIR}")
 
 target_link_libraries(${LIBRARY_NAME} PUBLIC xacc)
 
