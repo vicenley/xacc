@@ -1,5 +1,9 @@
 add_subdirectory(nlopt-optimizers)
 add_subdirectory(mlpack)
+
+if(XACC_BUILD_GSL)
+add_subdirectory(gsl)
+endif()
 if(XACC_BUILD_SCIPY)
   execute_process(COMMAND ${Python_EXECUTABLE} -c "import scipy" RESULT_VARIABLE SCIPY_EXISTS)
   if(SCIPY_EXISTS EQUAL "1")
