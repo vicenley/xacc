@@ -28,6 +28,12 @@ else()
   message(STATUS "${BoldYellow}Skipping Annealing libraries by default. You can turn it on with -DXACC_BUILD_ANNEALING=ON${ColorReset}")
 endif()
 
+option(QIREE_MINIMAL_BUILD "Build only components for QIREE CI" OFF)
+
+if(QIREE_MINIMAL_BUILD)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQIREE_BUILD")
+endif()
+
 if(FROM_SETUP_PY AND NOT APPLE)
   message(STATUS "Running build from setup.py, linking to static libstdc++")
   set(CMAKE_SHARED_LINKER_FLAGS "-static-libstdc++" CACHE INTERNAL "" FORCE)

@@ -545,6 +545,7 @@ TEST(PauliOperatorTester, checkGroupingCommuteCheck) {
   }
 }
 
+#ifndef QIREE_BUILD
 TEST(PauliOperatorTester, checkGroupingQaoaPostProcessLSB) {
   PauliOperator op;
   op.fromString("(1.5,0) + (-0.5,0) Z0 Z1 + (-0.5,0) Z0 Z2 + (-0.5,0) Z1 Z2");
@@ -591,6 +592,7 @@ TEST(PauliOperatorTester, checkGroupingQaoaPostProcessMSB) {
       buffer, xacc::Observable::PostProcessingTask::EXP_VAL_CALC, {});
   EXPECT_NEAR(exp_val, 2.0, 0.1);
 }
+#endif
 
 TEST(PauliOperatorTester, checkGetBasisRotations) {
   PauliOperator op;
