@@ -11,21 +11,20 @@
 #   Alexander J. McCaskey - initial API and implementation
 # *******************************************************************************/
 
-
 if(NOT QIREE_MINIMAL_BUILD)
-add_subdirectory(vqe)
-add_subdirectory(rdm)
-add_subdirectory(gradient_strategies)
-add_subdirectory(qaoa)
-add_subdirectory(rotoselect)
-add_subdirectory(adapt)
-add_subdirectory(qpe)
-add_subdirectory(qpt)
-add_subdirectory(ml)
-add_subdirectory(qite)
-add_subdirectory(qcmx)
-add_subdirectory(qeom)
-endif(QIREE_MINIMAL_BUILD)
+  add_subdirectory(vqe)
+  add_subdirectory(rdm)
+  add_subdirectory(gradient_strategies)
+  add_subdirectory(qaoa)
+  add_subdirectory(rotoselect)
+  add_subdirectory(adapt)
+  add_subdirectory(qpe)
+  add_subdirectory(qpt)
+  add_subdirectory(ml)
+  add_subdirectory(qite)
+  add_subdirectory(qcmx)
+  add_subdirectory(qeom)
+endif(NOT QIREE_MINIMAL_BUILD)
 
 
 file(GLOB PYDECORATORS ${CMAKE_CURRENT_SOURCE_DIR}/vqe/python/*.py
