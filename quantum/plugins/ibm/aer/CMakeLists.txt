@@ -1,6 +1,8 @@
 set(LIBRARY_NAME xacc-aer)
 
+if(NOT QIREE_MINIMAL_BUILD)
 add_subdirectory(py-aer)
+endif()
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64")
   if (NOT CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
@@ -26,8 +28,15 @@ target_include_directories(${LIBRARY_NAME}
 target_link_libraries(${LIBRARY_NAME}
                         PUBLIC xacc
                                xacc-quantum-gate
-                               xacc-py-aer-adapter
                         )
+      
+if(NOT QIREE_MINIMAL_BUILD)
+  target_link_libraries(${LIBRARY_NAME}
+  PUBLIC xacc-py-aer-adapter
+  )
+endif(NOT QIREE_MINIMAL_BUILD)
+
+
 if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "AMD64")
   if(APPLE OR UNIX)
     if (NOT CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")

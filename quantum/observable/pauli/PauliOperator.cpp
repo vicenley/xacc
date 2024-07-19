@@ -13,22 +13,11 @@
 #include "PauliOperator.hpp"
 #include "CompositeInstruction.hpp"
 #include "IRProvider.hpp"
-#include <cassert>
-#include <cmath>
-#include <memory>
-#include <regex>
-#include <set>
-#include <iostream>
-#include "Instruction.hpp"
-#include "Observable.hpp"
 #include "xacc.hpp"
 #include "xacc_service.hpp"
-
 #include <Eigen/Core>
-
 #include "PauliOperatorLexer.h"
 #include "PauliListenerImpl.hpp"
-
 #include <armadillo>
 
 namespace xacc {
@@ -1107,7 +1096,7 @@ std::vector<std::shared_ptr<CompositeInstruction>> PauliOperator::getMeasurement
 
   // the idea is that, for something like VQE, we only need to know
   // the qubits that need to be measure in the X or Y basis
-  // so we map the index of the qubit, to the corresponding
+  // so we map the index of the qubit, to the corresponding 
   // rotation operators, then later add measure to all qubits
   std::vector<std::shared_ptr<CompositeInstruction>> basisRotations;
 
