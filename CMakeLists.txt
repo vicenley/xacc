@@ -29,6 +29,7 @@ else()
 endif()
 
 option(QIREE_MINIMAL_BUILD "Build only components for QIREE CI" OFF)
+option(XACC_DEPS_EXTERNAL "Try find external dependencies (system installation) rather than tpls" OFF)
 
 if(QIREE_MINIMAL_BUILD)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQIREE_BUILD")
@@ -182,7 +183,6 @@ ENDIF()
 find_package(LAPACK)
 
 # Dependencies:
-option(XACC_DEPS_EXTERNAL "Try find external dependencies (system installation) rather than tpls" OFF)
 
 set(SPDLOG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tpls/spdlog/include/)
 if (XACC_DEPS_EXTERNAL)
