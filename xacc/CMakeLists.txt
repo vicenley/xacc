@@ -85,17 +85,14 @@ message(
                                     ${NLOHMANN_INCLUDE_DIR}
                                     ${SPDLOG_INCLUDE_DIR})
 
+  target_link_libraries(xacc
+                        PUBLIC CppMicroServices
+                        PRIVATE cpr
+                                ${LIBUNWIND_LIBRARIES}
+                                ${LIBUNWINDX86_LIBRARIES})
   # linking against MPI libraries found by cmake
   if(MPI_FOUND)
-    target_link_libraries(xacc
-                        PUBLIC CppMicroServices ${MPI_CXX_LIBRARIES}
-                        PRIVATE cpr ${LIBUNWIND_LIBRARIES}
-                                ${LIBUNWINDX86_LIBRARIES})
-  else()
-    target_link_libraries(xacc
-                        PUBLIC CppMicroServices
-                        PRIVATE cpr ${LIBUNWIND_LIBRARIES}
-                                ${LIBUNWINDX86_LIBRARIES})
+    target_link_libraries(xacc PUBLIC CppMicroServices ${MPI_CXX_LIBRARIES})
   endif()
 
 else()
@@ -119,11 +116,10 @@ else()
                                     ${NLOHMANN_INCLUDE_DIR}
                                     ${SPDLOG_INCLUDE_DIR})
 
+  target_link_libraries(xacc PUBLIC CppMicroServices PRIVATE cpr)
   # linking against MPI libraries found by cmake
   if(MPI_FOUND)
-    target_link_libraries(xacc PUBLIC CppMicroServices ${MPI_CXX_LIBRARIES} PRIVATE cpr)
-  else()
-    target_link_libraries(xacc PUBLIC CppMicroServices PRIVATE cpr)
+    target_link_libraries(xacc PUBLIC ${MPI_CXX_LIBRARIES})
   endif()
 
 endif()

@@ -151,7 +151,9 @@ add_compile_flags_if_supported(-Wno-maybe-uninitialized)
 # Check MPI status
 # if MPI_CXX_COMPILER is not empty and XACC_ENABLE_MPI is set
 # turn MPI_ENABLED on
-if(NOT MPI_CXX_COMPILER STREQUAL "" AND XACC_ENABLE_MPI)
+# Update: we don't really need to give the compiler
+# because if MPI is found, MPI_CXX_COMPILER is populated
+if(XACC_ENABLE_MPI)
   find_package(MPI)
 
   if(MPI_FOUND)
