@@ -106,7 +106,6 @@ void HPCVirtDecorator::execute(
   // their quantum execution across the node sub-groups.
 
   // Get the rank and size in the original communicator
-  auto start = std::chrono::high_resolution_clock::now();
   int world_size, world_rank;
   MPI_Comm_size(MPI_COMM_WORLD, &world_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
