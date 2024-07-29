@@ -62,8 +62,6 @@ if(LIBUNWIND_FOUND)
 target_link_libraries(xacc
   PRIVATE
     ${LIBUNWIND_LIBRARIES} ${LIBUNWINDX86_LIBRARIES}
-  PUBLIC
-    spdlog::spdlog
 )
 endif()
 
@@ -87,9 +85,13 @@ target_include_directories(xacc
     ${CMAKE_SOURCE_DIR}/tpls/mpark-variant
     ${NLOHMANN_INCLUDE_DIR}
 )
-target_link_libraries(xacc PUBLIC CppMicroServices)
-target_link_libraries(xacc PRIVATE cpr::cpr)
-
+target_link_libraries(xacc
+  PUBLIC
+    CppMicroServices
+    spdlog::spdlog
+  PRIVATE
+    cpr::cpr
+)
 
 # linking against MPI libraries found by cmake
 if(MPI_FOUND)
