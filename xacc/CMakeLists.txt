@@ -64,6 +64,8 @@ message(
 target_link_libraries(xacc
   PRIVATE
     ${LIBUNWIND_LIBRARIES} ${LIBUNWINDX86_LIBRARIES}
+  PUBLIC
+    spdlog::spdlog
 )
 endif()
 
@@ -86,7 +88,6 @@ target_include_directories(xacc
     optimizer
     ${CMAKE_SOURCE_DIR}/tpls/mpark-variant
     ${NLOHMANN_INCLUDE_DIR}
-    ${SPDLOG_INCLUDE_DIR}
 )
 target_link_libraries(xacc
   PUBLIC

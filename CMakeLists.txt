@@ -184,17 +184,17 @@ find_package(LAPACK)
 
 # Dependencies:
 
-set(SPDLOG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tpls/spdlog/include/)
+
 if (XACC_DEPS_EXTERNAL)
   find_package(spdlog)
-  if (spdlog_FOUND)
-    get_target_property(SPDLOG_TARGET_INC_DIR spdlog::spdlog_header_only INTERFACE_INCLUDE_DIRECTORIES)
-    if (EXISTS ${SPDLOG_TARGET_INC_DIR}/spdlog/spdlog.h)
-    # Found a seemingly valid spdlog installation, use it when XACC_DEPS_EXTERNAL is set
-    message(STATUS "${BoldGreen}spdlog: Found system installation at ${SPDLOG_TARGET_INC_DIR}/spdlog${ColorReset}")
-    set(SPDLOG_INCLUDE_DIR "${SPDLOG_TARGET_INC_DIR}")
-    endif()
-  endif()
+endif()
+if(NOT spdlog_FOUND)
+  # Create an interface target to the vendored spdlog
+  set(SPDLOG_INCLUDE_DIR "${SPDLOG_TARGET_INC_DIR}")
+  add_library(spdlog::spdlog INTERFACE IMPORTED)
+  target_include_directories(spdlog::spdlog INTERFACE
+    "${PROJECT_SOURCE_DIR}/tpls/spdlog/include"
+  )
 endif()
 
 set(NLOHMANN_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tpls/nlohmann/single_include)
