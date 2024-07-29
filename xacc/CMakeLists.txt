@@ -47,14 +47,12 @@ add_library(xacc SHARED
             service/xacc_service.cpp
             accelerator/remote/RemoteAccelerator.cpp)
 
-target_link_libraries(xacc PUBLIC cpr::cpr)
-
 if(MPI_FOUND)
   include_directories(${MPI_CXX_HEADER_DIR})
 endif()
 
 if(LIBUNWIND_FOUND)
-message(
+  message(
     STATUS "${BoldGreen}Building xacc with libunwind support.${ColorReset}")
   target_compile_definitions(xacc PUBLIC "-DHAS_LIBUNWIND")
   target_include_directories(xacc
@@ -89,16 +87,13 @@ target_include_directories(xacc
     ${CMAKE_SOURCE_DIR}/tpls/mpark-variant
     ${NLOHMANN_INCLUDE_DIR}
 )
-target_link_libraries(xacc
-  PUBLIC
-    CppMicroServices
-)
+target_link_libraries(xacc PUBLIC CppMicroServices)
+target_link_libraries(xacc PRIVATE cpr::cpr)
+
 
 # linking against MPI libraries found by cmake
 if(MPI_FOUND)
-  target_link_libraries(xacc
-    PUBLIC CppMicroServices ${MPI_CXX_LIBRARIES}
-  )
+  target_link_libraries(xacc PUBLIC ${MPI_CXX_LIBRARIES})
 endif()
 
 target_compile_features(xacc
