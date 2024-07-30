@@ -19,7 +19,9 @@
 #include "OpenPulseVisitor.hpp"
 #include "CountGatesOfTypeVisitor.hpp"
 
+#ifndef REMOTE_DISABLED
 #include <cpr/cpr.h>
+#endif
 
 #include "xacc.hpp"
 #include "xacc_service.hpp"
@@ -1085,7 +1087,7 @@ const std::string RestClient::post(const std::string &remoteUrl,
                                    const std::string &path,
                                    const std::string &postStr,
                                    std::map<std::string, std::string> headers) {
-
+#ifndef REMOTE_DISABLED
   if (headers.empty()) {
     headers.insert(std::make_pair("Content-type", "application/json"));
     headers.insert(std::make_pair("Connection", "keep-alive"));
@@ -1109,10 +1111,14 @@ const std::string RestClient::post(const std::string &remoteUrl,
                              r.error.message + ": " + r.text);
 
   return r.text;
+#else
+  return "";
+#endif
 }
 
 void RestClient::put(const std::string &remoteUrl, const std::string &putStr,
                      std::map<std::string, std::string> headers) {
+#ifndef REMOTE_DISABLED
   if (headers.empty()) {
     headers.insert(std::make_pair("Content-type", "application/json"));
     headers.insert(std::make_pair("Connection", "keep-alive"));
@@ -1133,12 +1139,14 @@ void RestClient::put(const std::string &remoteUrl, const std::string &putStr,
     throw std::runtime_error("HTTP POST Error - status code " +
                              std::to_string(r.status_code) + ": " +
                              r.error.message + ": " + r.text);
+#endif
   return;
 }
 const std::string
 RestClient::get(const std::string &remoteUrl, const std::string &path,
                 std::map<std::string, std::string> headers,
                 std::map<std::string, std::string> extraParams) {
+#ifndef REMOTE_DISABLED
   if (headers.empty()) {
     headers.insert(std::make_pair("Content-type", "application/json"));
     headers.insert(std::make_pair("Connection", "keep-alive"));
@@ -1166,6 +1174,9 @@ RestClient::get(const std::string &remoteUrl, const std::string &path,
                              r.error.message + ": " + r.text);
 
   return r.text;
+#else
+  return "";
+#endif
 }
 
 std::string IBMAccelerator::post(const std::string &_url,
@@ -1424,6 +1435,7 @@ void IBMPulseTransform::apply(std::shared_ptr<CompositeInstruction> program,
   program->clear();
   program->addInstructions(loweredKernel->getInstructions());
 }
+
 } // namespace quantum
 } // namespace xacc
 

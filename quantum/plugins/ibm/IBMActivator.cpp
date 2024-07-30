@@ -39,7 +39,13 @@ public:
   /**
    */
   void Start(BundleContext context) {
+
+//#
+//ifndef REMOTE_DISABLED
     auto acc = std::make_shared<xacc::quantum::IBMAccelerator>();
+    context.RegisterService<xacc::Accelerator>(acc);
+//#
+//endif
 
 #ifdef LAPACK_FOUND
     auto acc2 = std::make_shared<xacc::quantum::LocalIBMAccelerator>();
@@ -51,8 +57,6 @@ public:
 
     auto c2 = std::make_shared<xacc::quantum::QObjectCompiler>();
     context.RegisterService<xacc::Compiler>(c2);
-
-    context.RegisterService<xacc::Accelerator>(acc);
 
     auto qasm_qobj_gen = std::make_shared<xacc::quantum::QasmQObjGenerator>();
     auto pulse_qobj_gen = std::make_shared<xacc::quantum::PulseQObjGenerator>();

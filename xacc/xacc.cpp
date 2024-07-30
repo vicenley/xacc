@@ -347,6 +347,8 @@ std::shared_ptr<Accelerator> getAccelerator() {
   }
   return acc;
 }
+
+#ifndef REMOTE_DISABLED
 std::shared_ptr<Accelerator> getAccelerator(const std::string &name,
                                             std::shared_ptr<Client> client,
                                             const HeterogeneousMap &params) {
@@ -380,6 +382,7 @@ std::shared_ptr<Accelerator> getAccelerator(const std::string &name,
   }
   return acc;
 }
+#endif
 
 std::shared_ptr<Accelerator> getAccelerator(const std::string &name,
                                             const HeterogeneousMap &params) {
