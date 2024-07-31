@@ -32,12 +32,14 @@ add_subdirectory(cppmicroservices)
 # Fix for bug #161
 install(FILES "${CMAKE_BINARY_DIR}/tpls/cppmicroservices/CMakeFiles/Export/share/cppmicroservices4/cmake/CppMicroServicesTargets-release.cmake" DESTINATION share/cppmicroservices4/cmake OPTIONAL)
 
-if (NOT cpr_FOUND)
+if(XACC_REMOTE_ACCELERATORS)
+  if (NOT cpr_FOUND)
     set(CPR_FORCE_USE_SYSTEM_CURL ON CACHE BOOL "" FORCE)
     set(CPR_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
     set(BUILD_SHARED_LIBS FALSE)
     add_subdirectory(cpr)
+  endif()
 endif()
 
 if(XACC_BUILD_TESTS AND NOT GTest_FOUND)

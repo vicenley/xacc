@@ -24,46 +24,33 @@ install(FILES "${CMAKE_BINARY_DIR}/xacc/xacc_version" DESTINATION include/xacc)
 
 find_package(Libunwind)
 
-file(GLOB
-     HEADERS
-     xacc.hpp
-     ir/*.hpp
-     compiler/Compiler.hpp
-     accelerator/*.hpp
-     accelerator/remote/*.hpp
-     utils/*.hpp
-     service/*.hpp
-     algorithm/*.hpp
-     optimizer/*.hpp)
-
-add_library(xacc SHARED
-            xacc.cpp
-            accelerator/AcceleratorBuffer.cpp
-            utils/Utils.cpp
-            utils/CLIParser.cpp
-            utils/heterogeneous.cpp
-            ir/IRBuilder.cpp
-            service/ServiceRegistry.cpp
-            service/xacc_service.cpp
-            accelerator/remote/RemoteAccelerator.cpp)
-
-if(MPI_FOUND)
-  include_directories(${MPI_CXX_HEADER_DIR})
-endif()
-
-if(LIBUNWIND_FOUND)
-  message(
-    STATUS "${BoldGreen}Building xacc with libunwind support.${ColorReset}")
-  target_compile_definitions(xacc PUBLIC "-DHAS_LIBUNWIND")
-  target_include_directories(xacc
-    PRIVATE
-    ${LIBUNWIND_INCLUDE_DIRS}
-  )
-target_link_libraries(xacc
-  PRIVATE
-    ${LIBUNWIND_LIBRARIES} ${LIBUNWINDX86_LIBRARIES}
+file(GLOB HEADERS
+  xacc.hpp
+  ir/*.hpp
+  compiler/Compiler.hpp
+  accelerator/*.hpp
+  utils/*.hpp
+  service/*.hpp
+  algorithm/*.hpp
+  optimizer/*.hpp
 )
+
+file(GLOB SOURCES
+    xacc.cpp
+    accelerator/AcceleratorBuffer.cpp
+    utils/Utils.cpp
+    utils/CLIParser.cpp
+    utils/heterogeneous.cpp
+    ir/IRBuilder.cpp
+    service/ServiceRegistry.cpp
+    service/xacc_service.cpp)
+
+if(XACC_REMOTE_ACCELERATORS)
+  list(APPEND HEADERS accelerator/remote/RemoteAccelerator.hpp)
+  list(APPEND SOURCES accelerator/remote/RemoteAccelerator.cpp)
 endif()
+
+add_library(xacc SHARED ${SOURCES})
 
 target_include_directories(xacc
   PRIVATE
@@ -89,13 +76,27 @@ target_link_libraries(xacc
   PUBLIC
     CppMicroServices
     spdlog::spdlog
-  PRIVATE
-    cpr::cpr
 )
+
+if(LIBUNWIND_FOUND)
+  message(
+    STATUS "${BoldGreen}Building xacc with libunwind support.${ColorReset}")
+  target_compile_definitions(xacc PUBLIC "-DHAS_LIBUNWIND")
+  target_include_directories(xacc
+    PUBLIC
+      ${LIBUNWIND_LIBRARIES}
+      ${LIBUNWINDX86_LIBRARIES}
+  )
+endif()
 
 # linking against MPI libraries found by cmake
 if(MPI_FOUND)
+  include_directories(${MPI_CXX_HEADER_DIR})
   target_link_libraries(xacc PUBLIC ${MPI_CXX_LIBRARIES})
+endif()
+
+if(XACC_REMOTE_ACCELERATORS)
+  target_link_libraries(xacc PRIVATE cpr::cpr)
 endif()
 
 target_compile_features(xacc
