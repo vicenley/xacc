@@ -42,10 +42,14 @@ target_include_directories(${LIBRARY_NAME}
                                   ${CMAKE_SOURCE_DIR}/tpls/antlr/runtime/src
                                   ${CMAKE_SOURCE_DIR}/tpls/rapidjson/include)
 target_link_libraries(${LIBRARY_NAME}
-                      PUBLIC xacc
-                              xacc-quantum-gate
-                              ${ANTLR_LIB}
-                               CppMicroServices PRIVATE cpr::cpr)
+  PUBLIC
+    xacc
+    xacc-quantum-gate
+    ${ANTLR_LIB}
+    CppMicroServices
+  PRIVATE
+    cpr::cpr
+)
 
 if(XACC_REMOTE_ACCELERATORS)
   target_link_libraries(${LIBRARY_NAME} PRIVATE cpr)

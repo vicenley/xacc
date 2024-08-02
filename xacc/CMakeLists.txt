@@ -55,7 +55,6 @@ add_library(xacc SHARED ${SOURCES})
 target_include_directories(xacc
   PRIVATE
     ${CMAKE_BINARY_DIR}
-    ${CPR_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/tpls/rapidjson/include
     ${CMAKE_SOURCE_DIR}/tpls/cxxopts
   PUBLIC
@@ -64,7 +63,6 @@ target_include_directories(xacc
     compiler
     program
     accelerator
-    accelerator/remote
     utils
     service
     algorithm
@@ -79,17 +77,16 @@ target_link_libraries(xacc
 )
 
 if(LIBUNWIND_FOUND)
-  message(
-    STATUS "${BoldGreen}Building xacc with libunwind support.${ColorReset}")
+  message(STATUS "${BoldGreen}Building xacc with libunwind support.${ColorReset}")
   target_compile_definitions(xacc PUBLIC "-DHAS_LIBUNWIND")
-  target_include_directories(xacc
+  target_include_directories(xacc PRIVATE ${LIBUNWIND_INCLUDE_DIRS})
+  target_link_libraries(xacc
     PUBLIC
       ${LIBUNWIND_LIBRARIES}
       ${LIBUNWINDX86_LIBRARIES}
   )
 endif()
 
-# linking against MPI libraries found by cmake
 if(MPI_FOUND)
   include_directories(${MPI_CXX_HEADER_DIR})
   target_link_libraries(xacc PUBLIC ${MPI_CXX_LIBRARIES})
