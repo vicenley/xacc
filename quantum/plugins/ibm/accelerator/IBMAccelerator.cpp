@@ -19,7 +19,9 @@
 #include "OpenPulseVisitor.hpp"
 #include "CountGatesOfTypeVisitor.hpp"
 
+#ifndef REMOTE_DISABLED
 #include <cpr/cpr.h>
+#endif
 
 #include "xacc.hpp"
 #include "xacc_service.hpp"
@@ -185,7 +187,7 @@ bool hasMidCircuitMeasurement(
 }
 
 bool IBMAccelerator::verifyJobsLimit(std::string& curr_backend) {
-  
+
   // Get backend jobs limit
   std::string getJobsLimitPath = "/api/Network/" + hub + "/Groups/" + group +
                         "/Projects/" + project + "/devices/" + curr_backend +
@@ -202,13 +204,13 @@ bool IBMAccelerator::verifyJobsLimit(std::string& curr_backend) {
 }
 
 void IBMAccelerator::processBackendCandidate(nlohmann::json& backend_json) {
-  // First of all filter by count fo qubits  
+  // First of all filter by count fo qubits
   if (requested_n_qubits > 0) {
     if( backend_json.count("n_qubits") ) {
       int nqubits = backend_json["n_qubits"].get<int>();
       if(nqubits < requested_n_qubits) {
         return;
-      } 
+      }
     } else {
       return;
     }
@@ -447,8 +449,7 @@ std::string QasmQObjGenerator::getQObjJsonStr(
   qobj.set_header(qobjHeader);
 
   // Create the JSON String to send
-  nlohmann::json j;
-  nlohmann::to_json(j, qobj);
+  nlohmann::json j = qobj;
 
   return j.dump();
 }
@@ -559,8 +560,7 @@ std::string PulseQObjGenerator::getQObjJsonStr(
   root.set_backend(b);
   root.set_shots(shots);
 
-  nlohmann::json jj;
-  nlohmann::to_json(jj, root.get_q_object());
+  nlohmann::json jj= root.get_q_object();
   return jj.dump();
 }
 
@@ -1018,7 +1018,7 @@ void IBMAccelerator::contributeInstructions(
               pulseParams["duration"].get<int>();
           inst->setDuration(parametricPulseDuration);
         }
-        
+
         // Delay pulse has a duration
         if (inst_name == "delay") {
           inst->setDuration((*seq_iter)["duration"].get<int>());
@@ -1085,7 +1085,7 @@ const std::string RestClient::post(const std::string &remoteUrl,
                                    const std::string &path,
                                    const std::string &postStr,
                                    std::map<std::string, std::string> headers) {
-
+#ifndef REMOTE_DISABLED
   if (headers.empty()) {
     headers.insert(std::make_pair("Content-type", "application/json"));
     headers.insert(std::make_pair("Connection", "keep-alive"));
@@ -1109,10 +1109,14 @@ const std::string RestClient::post(const std::string &remoteUrl,
                              r.error.message + ": " + r.text);
 
   return r.text;
+#else
+  return "";
+#endif
 }
 
 void RestClient::put(const std::string &remoteUrl, const std::string &putStr,
                      std::map<std::string, std::string> headers) {
+#ifndef REMOTE_DISABLED
   if (headers.empty()) {
     headers.insert(std::make_pair("Content-type", "application/json"));
     headers.insert(std::make_pair("Connection", "keep-alive"));
@@ -1133,12 +1137,14 @@ void RestClient::put(const std::string &remoteUrl, const std::string &putStr,
     throw std::runtime_error("HTTP POST Error - status code " +
                              std::to_string(r.status_code) + ": " +
                              r.error.message + ": " + r.text);
+#endif
   return;
 }
 const std::string
 RestClient::get(const std::string &remoteUrl, const std::string &path,
                 std::map<std::string, std::string> headers,
                 std::map<std::string, std::string> extraParams) {
+#ifndef REMOTE_DISABLED
   if (headers.empty()) {
     headers.insert(std::make_pair("Content-type", "application/json"));
     headers.insert(std::make_pair("Connection", "keep-alive"));
@@ -1166,6 +1172,9 @@ RestClient::get(const std::string &remoteUrl, const std::string &path,
                              r.error.message + ": " + r.text);
 
   return r.text;
+#else
+  return "";
+#endif
 }
 
 std::string IBMAccelerator::post(const std::string &_url,
@@ -1309,7 +1318,7 @@ IBMAccelerator::getNativeCode(std::shared_ptr<CompositeInstruction> program,
             // qc.qasm() breaks when circuit qc contains gates with classical conditioning on a single cbit
             // Please note that this is a limitation of **OpenQASM** only,
             // i.e., qiskit's QuantumCircuit and QObj can both handle classical conditioning on a single cbit.
-            // Our native code gen strategy here is to 
+            // Our native code gen strategy here is to
             // convert multi-qreg indexing into multiple single-cbit registers:
             // i.e., c[3] -> c3 (single-bit register)
             // This only happens when classical conditioning on a single cbit is needed.
@@ -1424,6 +1433,7 @@ void IBMPulseTransform::apply(std::shared_ptr<CompositeInstruction> program,
   program->clear();
   program->addInstructions(loweredKernel->getInstructions());
 }
+
 } // namespace quantum
 } // namespace xacc
 

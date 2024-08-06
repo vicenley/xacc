@@ -50,6 +50,7 @@ bool UCCSD::expand(const xacc::HeterogeneousMap &runtimeOptions) {
   std::map<std::string, Term> terms;
   std::vector<xacc::InstructionParameter> variables;
 
+#ifndef QIREE_BUILD
   if (runtimeOptions.stringExists("pool")) {
 
     auto pool = xacc::getService<OperatorPool>(runtimeOptions.getString("pool"));
@@ -83,6 +84,7 @@ bool UCCSD::expand(const xacc::HeterogeneousMap &runtimeOptions) {
 
   } else { // create UCCSD as it used to
 
+#endif
     auto nSingle = _nOccupied * _nVirtual;
     auto nDouble = nSingle * (nSingle + 1) / 2;
     auto _nParameters = nSingle + nDouble;
@@ -212,9 +214,9 @@ bool UCCSD::expand(const xacc::HeterogeneousMap &runtimeOptions) {
         jw->transform(std::shared_ptr<Observable>(&myOp, [](Observable *) {}));
 
     terms = std::dynamic_pointer_cast<PauliOperator>(compositeResult)->getTerms();
-
+#ifndef QIREE_BUILD
   }
-
+#endif
   auto pi = xacc::constants::pi;
 int co = 0;
   auto gateRegistry = xacc::getIRProvider("quantum");
