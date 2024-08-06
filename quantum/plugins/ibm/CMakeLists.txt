@@ -47,12 +47,10 @@ target_link_libraries(${LIBRARY_NAME}
     xacc-quantum-gate
     ${ANTLR_LIB}
     CppMicroServices
-  PRIVATE
-    cpr::cpr
 )
 
 if(XACC_REMOTE_ACCELERATORS)
-  target_link_libraries(${LIBRARY_NAME} PRIVATE cpr)
+  target_link_libraries(${LIBRARY_NAME} PRIVATE cpr::cpr)
 endif()
 
 set(_bundle_name xacc_ibm)
