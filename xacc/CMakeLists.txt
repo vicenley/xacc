@@ -94,6 +94,7 @@ endif()
 
 if(XACC_REMOTE_ACCELERATORS)
   target_link_libraries(xacc PRIVATE cpr::cpr)
+  target_include_directories(xacc PUBLIC accelerator/remote)
 endif()
 
 target_compile_features(xacc
