@@ -42,6 +42,8 @@ option(XACC_ENSMALLEN_INCLUDE_DIR "Path to ensmallen.hpp for mlpack optimizer" "
 option(XACC_ARMADILLO_INCLUDE_DIR "Path to armadillo header for mlpack optimizer" "")
 option(XACC_BUILD_SCIPY "Build Scipy optimizer plugin" OFF)
 option(XACC_BUILD_ANNEALING "Build annealing libraries" OFF)
+option(XACC_BUILD_GSL "Build GNU Scientific Library optimizer plugin" OFF)
+
 if(XACC_BUILD_ANNEALING)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DANNEALING_ENABLED")
 else()

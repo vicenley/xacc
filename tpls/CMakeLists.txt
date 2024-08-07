@@ -114,3 +114,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" AND CMAKE_SYSTEM_NAME MATCHES
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     endif()
 endif ()
+
+if(XACC_BUILD_GSL)
+    add_subdirectory(gsl)
+endif()
