@@ -223,12 +223,25 @@ void HoneywellAccelerator::execute(
   if (!retrieve_job_id.empty()) {
 
     get_job_status = get(url, "job/" + retrieve_job_id, headers);
-    get_job_status_json = nlohmann::json::parse(get_job_status);
+    try {
+      get_job_status_json = nlohmann::json::parse(get_job_status);
+    } catch (nlohmann::json::exception const &) {
+      std::cout << "Failed to parse response '" << get_job_status
+                << "' from job status " << retrieve_job_id << std::endl;
+      throw;
+    }
 
   } else {
 
     auto response = post(url, "job", j.dump(), headers);
-    auto response_json = nlohmann::json::parse(response);
+    nlohmann::json response_json;
+    try {
+      response_json = nlohmann::json::parse(response);
+    } catch (nlohmann::json::exception const &) {
+      std::cout << "Failed to parse response '" << response << "' from job"
+                << std::endl;
+      throw;
+    }
     auto job_id = response_json["job"].get<std::string>();
 
     xacc::info("Honeywell job-id: " + job_id);
@@ -237,7 +250,13 @@ void HoneywellAccelerator::execute(
     int dots = 1;
     while (true) {
       get_job_status = get(url, "job/" + job_id, headers);
-      get_job_status_json = nlohmann::json::parse(get_job_status);
+      try {
+        get_job_status_json = nlohmann::json::parse(get_job_status);
+      } catch (nlohmann::json::exception const &) {
+        std::cout << "Failed to parse response '" << get_job_status
+                  << "' from job status " << job_id << std::endl;
+        throw;
+      }
 
       if (get_job_status_json["status"].get<std::string>().find("failed") !=
           std::string::npos) {
