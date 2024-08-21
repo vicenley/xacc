@@ -77,6 +77,7 @@ namespace ionq {
         private:
         std::string lang = "json";
         std::string target;
+        std::string noise_model = "ideal";
         std::int64_t shots;
         Body body;
 
@@ -88,6 +89,10 @@ namespace ionq {
         const std::string & get_target() const { return target; }
         std::string & get_mutable_target() { return target; }
         void set_target(const std::string & value) { this->target = value; }
+
+        const std::string & get_noise_model() const { return noise_model; }
+        std::string & get_mutable_noise_model() { return noise_model; }
+        void set_noise_model(const std::string & value) { this->noise_model = value; }
 
         const std::int64_t & get_shots() const { return shots; }
         std::int64_t & get_mutable_shots() { return shots; }
@@ -145,6 +150,7 @@ namespace nlohmann {
         x.set_target(j.at("target").get<std::string>());
         x.set_shots(j.at("shots").get<std::int64_t>());
         x.set_body(j.at("input").get<xacc::ionq::Body>());
+        x.set_noise_model(j.at("noise").at("model").get<std::string>());
     }
 
     inline void to_json(json & j, const xacc::ionq::IonQProgram & x) {
@@ -153,6 +159,7 @@ namespace nlohmann {
         j["target"] = x.get_target();
         j["shots"] = x.get_shots();
         j["input"] = x.get_body();
+        j["noise"] = { {"model", x.get_noise_model()} };
     }
 }
 
