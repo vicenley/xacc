@@ -18,7 +18,8 @@
 #include <Eigen/Core>
 #include "PauliOperatorLexer.h"
 #include "PauliListenerImpl.hpp"
-#include <armadillo>
+#include <Eigen/Sparse>
+#include <unsupported/Eigen/KroneckerProduct>
 
 namespace xacc {
 namespace quantum {
@@ -26,17 +27,17 @@ namespace quantum {
 std::vector<SparseTriplet> PauliOperator::to_sparse_matrix() {
   auto n_qubits = nQubits();
   auto n_hilbert = std::pow(2, n_qubits);
-  using SparseMatrix = arma::SpMat<std::complex<double>>;
+  using SparseMatrix = Eigen::SparseMatrix<std::complex<double>>;
 
-  SparseMatrix x(2, 2), y(2, 2), z(2, 2);
-  x(0, 1) = 1.0;
-  x(1, 0) = 1.0;
-  y(0, 1) = std::complex<double>(0, -1);
-  y(1, 0) = std::complex<double>(0, 1);
-  z(0, 0) = 1.;
-  z(1, 1) = -1.;
-
-  SparseMatrix i = arma::speye<SparseMatrix>(2, 2);
+  SparseMatrix x(2, 2), y(2, 2), z(2, 2), i(2, 2);
+  x.insert(0, 1) = 1.0;
+  x.insert(1, 0) = 1.0;
+  y.insert(0, 1) = std::complex<double>(0, -1);
+  y.insert(1, 0) = std::complex<double>(0, 1);
+  z.insert(0, 0) = 1.;
+  z.insert(1, 1) = -1.;
+  i.insert(0, 0) = 1.0;
+  i.insert(1, 1) = 1.0;
 
   std::map<std::string, SparseMatrix> mat_map{
       {"I", i}, {"X", x}, {"Y", y}, {"Z", z}};
@@ -44,7 +45,7 @@ std::vector<SparseTriplet> PauliOperator::to_sparse_matrix() {
   auto kron_ops = [](std::vector<SparseMatrix> &ops) {
     auto first = ops[0];
     for (int i = 1; i < ops.size(); i++) {
-      first = arma::kron(first, ops[i]);
+      first = Eigen::kroneckerProduct(first, ops[i]).eval();
     }
     return first;
   };
@@ -58,15 +59,23 @@ std::vector<SparseTriplet> PauliOperator::to_sparse_matrix() {
 
     if (term.second.ops().empty()) {
       // this was I term
-      auto id = arma::speye<SparseMatrix>(n_hilbert, n_hilbert);
+      SparseMatrix id(n_hilbert, n_hilbert);
+      id.reserve(Eigen::VectorXi::Constant(n_hilbert, 1));
+      for (std::size_t j = 0; j < n_hilbert; j++) {
+        id.insert(j, j) = 1.0;
+      }
       sparse_mats.push_back(id);
     } else {
       for (auto &pauli : term.second.ops()) {
         if (pauli.first > tensor_factor) {
 
-          auto id_qbits = pauli.first - tensor_factor;
-          auto id = arma::speye<SparseMatrix>((int)std::pow(2, id_qbits),
-                                              (int)std::pow(2, id_qbits));
+          //auto id_qbits = pauli.first - tensor_factor;
+          auto dim = (int)std::pow(2, pauli.first - tensor_factor);
+          SparseMatrix id(dim, dim);
+          id.reserve(Eigen::VectorXi::Constant(dim, 1));
+          for (std::size_t j = 0; j < dim; j++) {
+            id.insert(j, j) = 1.0;
+          }
           sparse_mats.push_back(id);
         }
 
@@ -74,9 +83,8 @@ std::vector<SparseTriplet> PauliOperator::to_sparse_matrix() {
         tensor_factor = pauli.first + 1;
       }
 
-      for (int i = tensor_factor; i < n_qubits; i++) {
-        auto id = arma::speye<SparseMatrix>(2, 2);
-        sparse_mats.push_back(id);
+      for (int j = tensor_factor; j < n_qubits; j++) {
+        sparse_mats.push_back(i);
       }
     }
 
@@ -85,21 +93,11 @@ std::vector<SparseTriplet> PauliOperator::to_sparse_matrix() {
     total += sp_matrix;
   }
 
-  //   arma::vec eigval;
-  //   arma::mat eigvec;
-
-  //   arma::sp_mat test(total.n_rows, total.n_cols);
-  //   for (auto i = total.begin(); i != total.end(); ++i) {
-  //     test(i.row(), i.col()) = (*i).real();
-  //   }
-
-  //   arma::eigs_sym(eigval, eigvec, test, 1);
-
-  //   std::cout << "EIGS:\n" << eigval << "\n";
-
   std::vector<SparseTriplet> trips;
-  for (auto iter = total.begin(); iter != total.end(); ++iter) {
-    trips.emplace_back(iter.row(), iter.col(), *iter);
+  for (int k = 0; k < total.outerSize(); ++k) {
+    for (SparseMatrix::InnerIterator it(total, k); it; ++it) {
+      trips.emplace_back(it.row(), it.col(), it.value());
+    }
   }
   return trips;
 }
