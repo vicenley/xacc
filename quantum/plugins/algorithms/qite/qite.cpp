@@ -381,7 +381,7 @@ QITE::internalCalcAOps(const std::vector<std::string> &pauliOps,
 
   // Now, we have the decomposition of A observable in the basis of
   // all possible Pauli combinations.
-  assert(a_Vec.n_elem == pauliOps.size());
+  assert(a_Vec.size() == pauliOps.size());
   const std::string aObsStr = [&]() {
     std::stringstream s;
     s.precision(12);
@@ -543,9 +543,9 @@ void QITE::execute(const std::shared_ptr<AcceleratorBuffer> buffer) const {
     // (1) Validate the convergence (e.g. Trotter step size) before running via
     // gates. (2) Derive the circuit analytically for running. exp(-dtH)
     const auto expMinusHamTerm = [](const Eigen::MatrixXcd &in_hMat,
-                                    const Eigen::MatrixXcd &in_psi, double in_dt) {
+                                    const Eigen::VectorXcd &in_psi, double in_dt) {
       assert(in_hMat.rows() == in_hMat.cols());
-      assert(in_hMat.rows() == in_psi.n_elem);
+      assert(in_hMat.rows() == in_psi.size());
       Eigen::MatrixXcd hMatExp = (-in_dt * in_hMat).exp();
       Eigen::VectorXcd result = hMatExp * in_psi;
       const double norm = result.norm();
@@ -831,7 +831,7 @@ double QLanczos::calcQlanczosEnergy(const std::vector<double> &normVec) const {
     // Handles an edge case where Hnew and Snew are just single-element
     // matrices; just returns those matrices.
     if (indexVec.size() == 1) {
-      assert(Hnew.n_elem == 1 && Snew.n_elem == 1);
+      assert(Hnew.size() == 1 && Snew.size() == 1);
       // Just returns these matrices,
       // no need to regularize any further.
       return std::make_pair(Hnew, Snew);
