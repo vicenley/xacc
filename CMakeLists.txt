@@ -255,7 +255,12 @@ find_package(Python COMPONENTS Interpreter Development)
         if(PIP_EXISTS EQUAL "0")
           # we have pip, son just install ipopo
           message(STATUS "${BoldGreen}Installing Pelix OSGi framework.${ColorReset}")
-          execute_process(COMMAND ${Python_EXECUTABLE} -m pip install ipopo)
+          # iPOPO 3.0 only works with python 3.10+
+          if(${Python_VERSION} VERSION_GREATER_EQUAL 3.10.0)
+            execute_process(COMMAND ${Python_EXECUTABLE} -m pip install ipopo)
+          else()
+            execute_process(COMMAND ${Python_EXECUTABLE} -m pip install ipopo==1.0.2)
+          endif()
         else()
           # we dont have pip, so warn the user
           message(STATUS "${BoldYellow}Pelix Framework not found, but can't install via pip. Ensure you install ipopo module before using XACC Python API.${ColorReset}")
