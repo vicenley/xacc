@@ -66,9 +66,11 @@ Clone the repository recursively, configure with `cmake` and build with `make`
 $ git clone https://github.com/eclipse/xacc
 $ cd xacc && mkdir build && cd build
 [default cmake call]
-$ cmake ..
+$ cmake .. 
 [with tests and examples]
 $ cmake .. -DXACC_BUILD_EXAMPLES=TRUE -DXACC_BUILD_TESTS=TRUE
+[with a dedicated python environment, it would be named as xacc]
+$ cmake .. -DPY_ENV=TRUE
 [now build xacc]
 $ make install
 [for a speedier build on linux]
