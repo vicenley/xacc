@@ -45,10 +45,97 @@ option(XACC_BUILD_ANNEALING "Build annealing libraries" OFF)
 option(XACC_BUILD_GSL "Build GNU Scientific Library optimizer plugin" OFF)
 option(XACC_BUILD_IONTRAP "Build the iontrap plugin" OFF)
 
+
+
+
+
+# Add option to specify if a Python environment should be created
+option(PY_ENV "Create and use a Conda Python environment" OFF)
+
+if(PY_ENV)
+  # Set the environment name to xacc
+  set(ANACONDA_ENV_NAME "xacc")
+
+  # List of required Python packages as separate arguments
+  set(PYTHON_PACKAGES "iPOPO" "qsrs" "rpcq" "qiskit" "qsearch" "scipy"  "myqlm" "scikit-quant" "qfactor")
+
+  # Check if the environment already exists by using conda info --envs
+  execute_process(
+    COMMAND conda info --envs
+    OUTPUT_VARIABLE CONDA_ENVS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+
+  # Check if the xacc environment is found in the list of conda environments
+  string(REGEX MATCH "[^ \n]*${ANACONDA_ENV_NAME}[^ \n]*" ANACONDA_ENV_PATH "${CONDA_ENVS}")
+
+  if(NOT ANACONDA_ENV_PATH)
+    # If the environment does not exist, create it
+    message(STATUS "Conda environment ${ANACONDA_ENV_NAME} not found. Creating the environment.")
+    execute_process(COMMAND conda create -y --name ${ANACONDA_ENV_NAME} python==3.12.4
+                    RESULT_VARIABLE CONDA_CREATE_RESULT)
+
+    if(NOT CONDA_CREATE_RESULT EQUAL "0")
+      message(FATAL_ERROR "Failed to create Conda environment ${ANACONDA_ENV_NAME}")
+    endif()
+
+    # After creation, update the environment path
+    execute_process(
+      COMMAND conda info --envs
+      OUTPUT_VARIABLE CONDA_ENVS
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    string(REGEX MATCH "[^ \n]*${ANACONDA_ENV_NAME}[^ \n]*" ANACONDA_ENV_PATH "${CONDA_ENVS}")
+  else()
+    message(STATUS "Conda environment ${ANACONDA_ENV_NAME} already exists at ${ANACONDA_ENV_PATH}")
+  endif()
+
+  # Install necessary Python packages using conda run to ensure environment context
+  foreach(package ${PYTHON_PACKAGES})
+    message(STATUS "Checking installation of Python package: ${package}")
+
+    # First, check if the package is already installed by trying to import it
+    execute_process(
+      COMMAND ${Python_EXECUTABLE} -c "import ${package}" 
+      RESULT_VARIABLE PACKAGE_INSTALLED
+      OUTPUT_QUIET ERROR_QUIET
+    )
+
+    if(PACKAGE_INSTALLED EQUAL "0")
+      message(STATUS "Python package ${package} is already installed.")
+    else()
+      message(STATUS "Installing Python package: ${package}")
+      execute_process(
+        COMMAND pip install ${package}
+        RESULT_VARIABLE PIP_INSTALL_RESULT
+      )
+
+      if(NOT PIP_INSTALL_RESULT EQUAL "0")
+        message(WARNING "Failed to install Python package ${package}. Continuing without it.")
+      endif()
+    endif()
+  endforeach()
+
+  # Set the path to Python executable directly from the conda environment
+  set(Python_EXECUTABLE "${ANACONDA_ENV_PATH}/bin/python")
+
+  message(STATUS "Using Python from Conda environment: ${Python_EXECUTABLE}")
+else()
+  message(STATUS "PY_ENV is OFF, not using Conda environment.")
+endif()
+
+
+
+
+
+
+
+
 if(XACC_BUILD_ANNEALING)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DANNEALING_ENABLED")
 else()
-  message(STATUS "${Bold Yellow}Skipping Annealing libraries by default. You can turn it on with -DXACC_BUILD_ANNEALING=ON${ColorReset}")
+  message(STATUS "${BoldYellow}Skipping Annealing libraries by default. You can turn it on with -DXACC_BUILD_ANNEALING=ON${ColorReset}")
 endif()
 
 option(QIREE_MINIMAL_BUILD "Build only components for QIREE CI" OFF)
@@ -236,15 +323,6 @@ add_subdirectory(quantum)
 
 # qiree doesn't need python, so we can ignore this and everything else that is python related
 if(NOT QIREE_MINIMAL_BUILD)
-
-# 
-set(ANACONDA_ENV_PATH "" CACHE PATH "Path to the Anaconda environment")
-
-# If ANACONDA_ENV_PATH is defined, prepend it to the system PATH
-if(ANACONDA_ENV_PATH)
-  list(INSERT CMAKE_PREFIX_PATH 0 "${ANACONDA_ENV_PATH}")
-  set(Python_EXECUTABLE "${ANACONDA_ENV_PATH}/bin/python")
-endif()
 
 
 find_package(Python COMPONENTS Interpreter Development)
