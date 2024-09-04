@@ -48,7 +48,7 @@ option(XACC_BUILD_IONTRAP "Build the iontrap plugin" OFF)
 if(XACC_BUILD_ANNEALING)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DANNEALING_ENABLED")
 else()
-  message(STATUS "${BoldYellow}Skipping Annealing libraries by default. You can turn it on with -DXACC_BUILD_ANNEALING=ON${ColorReset}")
+  message(STATUS "${Bold Yellow}Skipping Annealing libraries by default. You can turn it on with -DXACC_BUILD_ANNEALING=ON${ColorReset}")
 endif()
 
 option(QIREE_MINIMAL_BUILD "Build only components for QIREE CI" OFF)
@@ -237,11 +237,21 @@ add_subdirectory(quantum)
 # qiree doesn't need python, so we can ignore this and everything else that is python related
 if(NOT QIREE_MINIMAL_BUILD)
 
+# 
+set(ANACONDA_ENV_PATH "" CACHE PATH "Path to the Anaconda environment")
+
+# If ANACONDA_ENV_PATH is defined, prepend it to the system PATH
+if(ANACONDA_ENV_PATH)
+  list(INSERT CMAKE_PREFIX_PATH 0 "${ANACONDA_ENV_PATH}")
+  set(Python_EXECUTABLE "${ANACONDA_ENV_PATH}/bin/python")
+endif()
+
+
 find_package(Python COMPONENTS Interpreter Development)
 
   if(Python_FOUND)
     if(${Python_VERSION} VERSION_GREATER_EQUAL 3.0.0)
-      message(STATUS "${BoldGreen}Found Python version ${Python_VERSION}. Building XACC Python API with ${Python_INCLUDE_DIRS}${ColorReset}")
+      message(STATUS "${BoldGreen}Found Python version using the an Anaconda environment ${Python_VERSION}D. Building XACC Python API with ${Python_INCLUDE_DIRS}${ColorReset}")
       add_subdirectory(python)
       add_subdirectory(${CMAKE_SOURCE_DIR}/quantum/python)
 
@@ -375,3 +385,4 @@ if(XACC_CPACK_RPM_PLATFORM)
 
   include(CPack)
 endif()
+
