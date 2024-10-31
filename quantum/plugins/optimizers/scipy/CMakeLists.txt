@@ -1,4 +1,9 @@
 message(STATUS "${BoldGreen}Building Scipy Optimizer.${ColorReset}")
+
+# Set the python_ROOT_DIR to the root of your Anaconda environment
+set(Python_ROOT_DIR ${ANACONDA_ENV_PATH})
+set(Python_EXECUTABLE ${Python_ROOT_DIR}/bin/python)
+
 set(LIBRARY_NAME xacc-scipy-optimizer)
 
 file(GLOB
@@ -14,6 +19,7 @@ usfunctiongeneratebundleinit(TARGET
                              OUT
                              SRC)
 #find_package(pybind11 REQUIRED)
+
 find_package(Python COMPONENTS Interpreter Development)
 
 add_library(${LIBRARY_NAME} SHARED ${SRC})

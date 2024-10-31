@@ -1,4 +1,8 @@
 set(LIBRARY_NAME xacc-py-aer-adapter)
+# Set the python_ROOT_DIR to the root of your Anaconda environment
+set(Python_ROOT_DIR ${ANACONDA_ENV_PATH})
+set(Python_EXECUTABLE ${Python_ROOT_DIR}/bin/python)
+
 find_package(Python COMPONENTS Interpreter Development)
 get_filename_component(PYTHON_LIB_NAME ${Python_LIBRARIES} NAME)
 configure_file(aer_python_adapter.in.cpp

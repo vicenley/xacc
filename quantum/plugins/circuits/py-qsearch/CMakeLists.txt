@@ -10,6 +10,10 @@
 # *******************************************************************************/
 set(LIBRARY_NAME xacc-py-qsearch)
 
+# Set the python_ROOT_DIR to the root of your Anaconda environment
+set(Python_ROOT_DIR ${ANACONDA_ENV_PATH})
+set(Python_EXECUTABLE ${Python_ROOT_DIR}/bin/python)
+
 find_package(Python COMPONENTS Interpreter Development)
 if(Python_FOUND)
 

@@ -57,7 +57,7 @@ if(PY_ENV)
   set(ANACONDA_ENV_NAME "xacc")
 
   # List of required Python packages as separate arguments
-  set(PYTHON_PACKAGES "iPOPO" "qsrs" "rpcq" "qiskit" "qsearch" "scipy"  "myqlm" "scikit-quant" "qfactor")
+  set(PYTHON_PACKAGES "iPOPO" "qsrs" "rpcq" "qiskit" "qsearch" "scipy"  "myqlm" "scikit-quant" "qfactor" "pybind11")
 
   # Check if the environment already exists by using conda info --envs
   execute_process(
@@ -107,7 +107,9 @@ if(PY_ENV)
     else()
       message(STATUS "Installing Python package: ${package}")
       execute_process(
-        COMMAND conda run -n ${ANACONDA_ENV_NAME} ${Python_EXECUTABLE} -m pip install ${package}
+        COMMAND conda run -n ${ANACONDA_ENV_NAME} ${Python_EXECUTABLE} pip install ${package}
+
+      #COMMAND conda run -n ${ANACONDA_ENV_NAME} ${Python_EXECUTABLE} -m pip install ${package}
         RESULT_VARIABLE PIP_INSTALL_RESULT
       )
 
@@ -116,11 +118,15 @@ if(PY_ENV)
       endif()
     endif()
   endforeach()
+  
+  execute_process(
+    COMMAND conda activate ${ANACONDA_ENV_NAME}
+  )
 
   # Set the path to Python executable directly from the conda environment
   set(Python_EXECUTABLE "${ANACONDA_ENV_PATH}/bin/python")
 
-  message(STATUS "Using Python from Conda environment: ${Python_EXECUTABLE}")
+  message(STATUS "Using Python from Conda environment: ${Python_EXECUTABLE}{colorreset}")
 else()
   message(STATUS "PY_ENV is OFF, not using Conda environment.")
 endif()
