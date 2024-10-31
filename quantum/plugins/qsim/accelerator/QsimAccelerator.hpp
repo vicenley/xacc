@@ -286,7 +286,7 @@ struct Factory {
   unsigned num_threads;
 };
 
-class QsimAccelerator : public Accelerator {
+class QsimAccelerator : public Accelerator {q
 public:
   // Qsim type:
   using Simulator = qsim::Simulator<qsim::For>;

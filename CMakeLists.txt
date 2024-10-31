@@ -107,7 +107,7 @@ if(PY_ENV)
     else()
       message(STATUS "Installing Python package: ${package}")
       execute_process(
-        COMMAND pip install ${package}
+        COMMAND conda run -n ${ANACONDA_ENV_NAME} ${Python_EXECUTABLE} -m pip install ${package}
         RESULT_VARIABLE PIP_INSTALL_RESULT
       )
 

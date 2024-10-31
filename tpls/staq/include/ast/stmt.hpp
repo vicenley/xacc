@@ -198,8 +198,9 @@ class IfStmt final : public Stmt {
      * \param then The statement to execute in the then branch
      */
     IfStmt(parser::Position pos, symbol var, int cond, ptr<Stmt> then)
+        // print the input 
         : Stmt(pos), var_(var), cond_(cond), then_(std::move(then)) {}
-
+    
     /**
      * \brief Protected heap-allocated construction
      */

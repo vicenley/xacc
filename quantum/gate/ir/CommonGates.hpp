@@ -57,7 +57,6 @@ class IfStmt : public Circuit {
 protected:
   std::string bufferName;
   std::size_t bitIdx;
-
 public:
   IfStmt() : Circuit("ifstmt") {}
 
@@ -70,9 +69,11 @@ public:
   getParameter(const std::size_t idx) const override {
     return InstructionParameter(bufferName);
   }
+  
   void setParameter(const std::size_t idx, InstructionParameter &p) override {
     bufferName = p.toString();
   }
+
   std::vector<InstructionParameter> getParameters() override {
     return {bufferName};
   }
