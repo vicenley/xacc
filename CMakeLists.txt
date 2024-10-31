@@ -87,6 +87,7 @@ if(PY_ENV)
     )
 
     string(REGEX MATCH "[^ \n]*${ANACONDA_ENV_NAME}[^ \n]*" ANACONDA_ENV_PATH "${CONDA_ENVS}")
+    message(STATUS "Conda environment ${ANACONDA_ENV_NAME} created at ${ANACONDA_ENV_PATH}")
   else()
     message(STATUS "Conda environment ${ANACONDA_ENV_NAME} already exists at ${ANACONDA_ENV_PATH}")
   endif()
@@ -327,49 +328,6 @@ endif()
 add_subdirectory(xacc)
 add_subdirectory(quantum)
 
-# qiree doesn't need python, so we can ignore this and everything else that is python related
-if(NOT QIREE_MINIMAL_BUILD)
-
-
-find_package(Python COMPONENTS Interpreter Development)
-
-  if(Python_FOUND)
-    if(${Python_VERSION} VERSION_GREATER_EQUAL 3.0.0)
-      message(STATUS "${BoldGreen}Found Python version using the an Anaconda environment ${Python_VERSION}D. Building XACC Python API with ${Python_INCLUDE_DIRS}${ColorReset}")
-      add_subdirectory(python)
-      add_subdirectory(${CMAKE_SOURCE_DIR}/quantum/python)
-
-      # Double check we have module ipopo installed, contributes pelix
-      execute_process(COMMAND ${Python_EXECUTABLE} -c "import pelix" RESULT_VARIABLE PELIX_EXISTS)
-
-      if(PELIX_EXISTS EQUAL "1")
-        # if not, check we have pip
-        execute_process(COMMAND ${Python_EXECUTABLE} -c "import pip" RESULT_VARIABLE PIP_EXISTS)
-
-        if(PIP_EXISTS EQUAL "0")
-          # we have pip, son just install ipopo
-          message(STATUS "${BoldGreen}Installing Pelix OSGi framework.${ColorReset}")
-          # iPOPO 3.0 only works with python 3.10+
-          if(${Python_VERSION} VERSION_GREATER_EQUAL 3.10.0)
-            execute_process(COMMAND ${Python_EXECUTABLE} -m pip install ipopo)
-          else()
-            execute_process(COMMAND ${Python_EXECUTABLE} -m pip install ipopo==1.0.2)
-          endif()
-        else()
-          # we dont have pip, so warn the user
-          message(STATUS "${BoldYellow}Pelix Framework not found, but can't install via pip. Ensure you install ipopo module before using XACC Python API.${ColorReset}")
-        endif()
-      else()
-        message(STATUS "${BoldGreen}Found Pelix framework.${ColorReset}")
-      endif()
-    else()
-      message(STATUS "${BoldYellow}Found Python version ${Python_VERSION}. Version must be greater than 3.0.0, skipping Python API build.${ColorReset}")
-    endif()
-  else()
-    message(STATUS "${BoldYellow}Python interpreter or development headers not found. Skipping Python API build.${ColorReset}")
-  endif()
-
-endif()
 
 # Version info
 set(MAJOR_VERSION 1)
